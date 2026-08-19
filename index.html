@@ -64,7 +64,7 @@ function onEach(f,l){const d=REG[norm(f.properties.name)]; if(!d)return; byName[
   l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); showInfo(d);});
   l.on('mouseout',()=>{layer.resetStyle(l);});
   l.on('click',()=>{showInfo(d); map.fitBounds(l.getBounds(),{maxZoom:11});});
-  l.bindTooltip(d.nome,{permanent:true,direction:'center',className:'citylabel'});}
+  l.bindTooltip(d.nome,{direction:'center',className:'citylabel'});}
 Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r.json())]).then(([reg,gj])=>{
   REG=reg;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
