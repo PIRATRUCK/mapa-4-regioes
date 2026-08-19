@@ -18,7 +18,7 @@
   #search input{width:100%;box-sizing:border-box;padding:6px;border:1px solid #ccc;border-radius:5px}
   .leaflet-tooltip.city{font-weight:bold}
   /* rótulo fixo com o nome da cidade sobre a região */
-  .leaflet-tooltip.citylabel{background:rgba(255,255,255,.9);border:1px solid #333;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.35);color:#111;font-size:11px;font-weight:bold;padding:1px 5px;white-space:nowrap}
+  .leaflet-tooltip.citylabel{background:transparent;border:none;box-shadow:none;color:#5b5b5b;opacity:.7;font-size:9px;font-weight:500;padding:0;white-space:nowrap;text-shadow:0 0 2px rgba(255,255,255,.8)}
   .leaflet-tooltip.citylabel::before{display:none}
   @media print{ .leaflet-tooltip.citylabel{font-size:11px} }
   /* rótulo fixo do NOME DA REGIÃO (sempre visível, sai na impressão) */
@@ -64,7 +64,7 @@ function onEach(f,l){const d=REG[norm(f.properties.name)]; if(!d)return; byName[
   l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); showInfo(d);});
   l.on('mouseout',()=>{layer.resetStyle(l);});
   l.on('click',()=>{showInfo(d); map.fitBounds(l.getBounds(),{maxZoom:11});});
-  l.bindTooltip(d.nome,{direction:'center',className:'citylabel'});}
+  l.bindTooltip(d.nome,{permanent:true,direction:'center',className:'citylabel'});}
 Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r.json())]).then(([reg,gj])=>{
   REG=reg;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
