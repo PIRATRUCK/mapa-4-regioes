@@ -1,0 +1,103 @@
+<!doctype html><html lang="pt-br"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIRATRUCK — Mapa de Regiões (MR1 · MR2 · MR3)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+  html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif}
+  #map{position:absolute;top:0;bottom:0;left:0;right:0}
+  .titlebar{position:absolute;top:0;left:0;right:0;z-index:1000;background:#C00000;color:#fff;padding:8px 14px;font-weight:bold;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .panel{position:absolute;z-index:1000;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:10px 12px;font-size:13px}
+  #legend{bottom:18px;right:12px;min-width:190px}
+  #info{top:52px;right:12px;width:230px;display:none}
+  #info h3{margin:0 0 4px;font-size:15px;color:#C00000}
+  .lg{display:flex;align-items:center;gap:8px;cursor:pointer;margin:4px 0;user-select:none}
+  .sw{width:20px;height:20px;border:1px solid #333;border-radius:3px}
+  .lg.off{opacity:.35}
+  .row{margin:2px 0}.k{color:#666}
+  #search{top:52px;left:12px;width:220px}
+  #search input{width:100%;box-sizing:border-box;padding:6px;border:1px solid #ccc;border-radius:5px}
+  .leaflet-tooltip.city{font-weight:bold}
+  /* rótulo fixo com o nome da cidade sobre a região */
+  .leaflet-tooltip.citylabel{background:rgba(255,255,255,.9);border:1px solid #333;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.35);color:#111;font-size:11px;font-weight:bold;padding:1px 5px;white-space:nowrap}
+  .leaflet-tooltip.citylabel::before{display:none}
+  @media print{ .leaflet-tooltip.citylabel{font-size:11px} }
+  .print-btn{float:right;background:#fff;color:#C00000;border:none;border-radius:5px;padding:4px 10px;font-weight:bold;cursor:pointer;font-size:13px;margin-top:-2px}
+  .print-btn:hover{background:#ffe9e9}
+  @media print{
+    @page{margin:6mm;size:landscape}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    /* esconde tudo que não é a região colorida */
+    #search,#info,.print-btn,.leaflet-control-container,.leaflet-tile-pane{display:none!important}
+    .titlebar{box-shadow:none}
+    #legend{box-shadow:none;border:1px solid #999}
+    .leaflet-container{background:#fff!important}
+  }
+</style></head><body>
+<div class="titlebar"><button class="print-btn" onclick="imprimirMapa()">🖨️ Imprimir</button>🗺️ PIRATRUCK — Cenário 4 Regiões · <span style="font-weight:normal">R1 Campinas · R2 Araraquara · R3 Sorocaba · R4 Piracicaba</span></div>
+<div id="map"></div>
+<div class="panel" id="search"><input id="q" placeholder="🔎 buscar cidade..." autocomplete="off"></div>
+<div class="panel" id="info"></div>
+<div class="panel" id="legend"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const MRC={R1:'#43a047',R2:'#f6c700',R3:'#1e88e5',R4:'#8e24aa'};
+const MRNAME={R1:'R1 — Campinas',R2:'R2 — Araraquara (+Limeira)',R3:'R3 — Sorocaba/Itapeva',R4:'R4 — Piracicaba'};
+function norm(s){return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\./g,' ').replace(/\s+/g,' ').trim();}
+const map=L.map('map',{preferCanvas:true}).setView([-22.9,-47.6],8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+  attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={};
+const info=document.getElementById('info');
+function style(f){const d=REG[norm(f.properties.name)];
+  if(!d) return {fillColor:'#000',fillOpacity:0,color:'#bbb',weight:0.4,opacity:0};
+  const on=shown[d.mr];
+  return {fillColor:MRC[d.mr],fillOpacity:on?0.72:0.05,color:'#fff',weight:on?1:0.4,opacity:on?1:0.3};}
+function showInfo(d){info.style.display='block';
+  info.innerHTML=`<h3>${d.nome}</h3>
+   <div class="row"><span class="k">Macrorregião:</span> <b style="color:${MRC[d.mr]}">${d.mr}</b></div>
+   <div class="row"><span class="k">Vendedor:</span> <b>${d.vend}</b></div>
+   <div class="row"><span class="k">Pinos (emplac.):</span> <b>${d.pin}</b></div>`;}
+function onEach(f,l){const d=REG[norm(f.properties.name)]; if(!d)return; byName[norm(f.properties.name)]=l;
+  l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); showInfo(d);});
+  l.on('mouseout',()=>{layer.resetStyle(l);});
+  l.on('click',()=>{showInfo(d); map.fitBounds(l.getBounds(),{maxZoom:11});});
+  l.bindTooltip(d.nome,{permanent:true,direction:'center',className:'citylabel',opacity:1});}
+Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r.json())]).then(([reg,gj])=>{
+  REG=reg;
+  layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
+  // fit aos coloridos
+  const b=L.latLngBounds([]); layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(d)b.extend(l.getBounds());});
+  window.COLORED_BOUNDS=b;
+  map.fitBounds(b,{padding:[20,20]});
+  buildLegend();
+});
+function buildLegend(){
+  const cnt={R1:[0,0],R2:[0,0],R3:[0,0],R4:[0,0]};
+  Object.values(REG).forEach(d=>{cnt[d.mr][0]++;cnt[d.mr][1]+=d.pin;});
+  const el=document.getElementById('legend');
+  el.innerHTML='<div style="font-weight:bold;margin-bottom:4px">Macrorregiões (clique p/ filtrar)</div>'+
+   ['R1','R2','R3','R4'].map(m=>`<div class="lg" data-mr="${m}"><span class="sw" style="background:${MRC[m]}"></span>
+      <span>${MRNAME[m]}<br><span class="k">${cnt[m][0]} cidades · ${cnt[m][1]} pinos</span></span></div>`).join('');
+  el.querySelectorAll('.lg').forEach(e=>e.onclick=()=>{const m=e.dataset.mr;shown[m]=!shown[m];
+    e.classList.toggle('off',!shown[m]); layer.setStyle(style);});
+}
+let _savedView=null;
+function fitParaImpressao(){
+  info.style.display='none';
+  if(window.COLORED_BOUNDS && window.COLORED_BOUNDS.isValid()){
+    if(!_savedView) _savedView={c:map.getCenter(),z:map.getZoom()};
+    map.invalidateSize(false);
+    // centraliza as regiões coloridas no meio da folha
+    map.fitBounds(window.COLORED_BOUNDS,{padding:[10,10],animate:false});
+  }
+}
+function restaurarView(){
+  if(_savedView){ map.setView(_savedView.c,_savedView.z,{animate:false}); _savedView=null; }
+}
+function imprimirMapa(){ fitParaImpressao(); setTimeout(()=>window.print(),350); }
+window.addEventListener('beforeprint',fitParaImpressao);
+window.addEventListener('afterprint',restaurarView);
+document.getElementById('q').addEventListener('input',e=>{const q=norm(e.target.value);
+  if(q.length<2)return; for(const k in byName){ if(k.includes(q)){const l=byName[k];
+     map.fitBounds(l.getBounds(),{maxZoom:11}); l.fire('mouseover'); break;}}});
+</script></body></html>
