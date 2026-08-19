@@ -21,6 +21,9 @@
   .leaflet-tooltip.citylabel{background:rgba(255,255,255,.9);border:1px solid #333;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.35);color:#111;font-size:11px;font-weight:bold;padding:1px 5px;white-space:nowrap}
   .leaflet-tooltip.citylabel::before{display:none}
   @media print{ .leaflet-tooltip.citylabel{font-size:11px} }
+  /* rótulo fixo do NOME DA REGIÃO (sempre visível, sai na impressão) */
+  .leaflet-tooltip.regionlabel{background:rgba(255,255,255,.92);border:2px solid #222;border-radius:7px;box-shadow:0 2px 6px rgba(0,0,0,.4);color:#111;font-size:15px;font-weight:800;padding:3px 9px;white-space:nowrap}
+  .leaflet-tooltip.regionlabel::before{display:none}
   .print-btn{float:right;background:#fff;color:#C00000;border:none;border-radius:5px;padding:4px 10px;font-weight:bold;cursor:pointer;font-size:13px;margin-top:-2px}
   .print-btn:hover{background:#ffe9e9}
   @media print{
@@ -70,7 +73,18 @@ Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r
   window.COLORED_BOUNDS=b;
   map.fitBounds(b,{padding:[20,20]});
   buildLegend();
+  addRegionLabels();
 });
+function addRegionLabels(){
+  const rb={};
+  layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(!d)return;
+    (rb[d.mr]=rb[d.mr]||L.latLngBounds([])).extend(l.getBounds());});
+  const NAMES={R1:'R1 · Campinas',R2:'R2 · Araraquara',R3:'R3 · Sorocaba',R4:'R4 · Piracicaba'};
+  Object.keys(rb).forEach(m=>{
+    L.marker(rb[m].getCenter(),{interactive:false,opacity:0,keyboard:false}).addTo(map)
+      .bindTooltip(NAMES[m]||m,{permanent:true,direction:'center',className:'regionlabel'}).openTooltip();
+  });
+}
 function buildLegend(){
   const cnt={R1:[0,0],R2:[0,0],R3:[0,0],R4:[0,0]};
   Object.values(REG).forEach(d=>{cnt[d.mr][0]++;cnt[d.mr][1]+=d.pin;});
