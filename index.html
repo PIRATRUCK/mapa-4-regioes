@@ -64,7 +64,7 @@ function onEach(f,l){const d=REG[norm(f.properties.name)]; if(!d)return; byName[
   l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); showInfo(d);});
   l.on('mouseout',()=>{layer.resetStyle(l);});
   l.on('click',()=>{showInfo(d); map.fitBounds(l.getBounds(),{maxZoom:11});});
-  l.bindTooltip(d.nome,{direction:'center',className:'citylabel'});}
+  l.bindTooltip(d.nome,{permanent:true,direction:'center',className:'citylabel'});}
 Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r.json())]).then(([reg,gj])=>{
   REG=reg;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
@@ -73,18 +73,7 @@ Promise.all([fetch('data.json').then(r=>r.json()),fetch('sp_mun.json').then(r=>r
   window.COLORED_BOUNDS=b;
   map.fitBounds(b,{padding:[20,20]});
   buildLegend();
-  addRegionLabels();
 });
-function addRegionLabels(){
-  const rb={};
-  layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(!d)return;
-    (rb[d.mr]=rb[d.mr]||L.latLngBounds([])).extend(l.getBounds());});
-  const NAMES={R1:'R1 · Campinas',R2:'R2 · Araraquara',R3:'R3 · Sorocaba',R4:'R4 · Piracicaba'};
-  Object.keys(rb).forEach(m=>{
-    L.marker(rb[m].getCenter(),{interactive:false,opacity:0,keyboard:false}).addTo(map)
-      .bindTooltip(NAMES[m]||m,{permanent:true,direction:'center',className:'regionlabel'}).openTooltip();
-  });
-}
 function buildLegend(){
   const cnt={R1:[0,0],R2:[0,0],R3:[0,0],R4:[0,0]};
   Object.values(REG).forEach(d=>{cnt[d.mr][0]++;cnt[d.mr][1]+=d.pin;});
