@@ -203,15 +203,10 @@ document.getElementById('fLimpar').addEventListener('click',()=>{
   document.getElementById('fMarca').value='T';document.getElementById('fFab').value='';document.getElementById('fFam').value='';
   aplicarFiltro();});
 
-let _savedView=null;
-function fitParaImpressao(){info.style.display='none';
-  if(window.COLORED_BOUNDS&&window.COLORED_BOUNDS.isValid()){
-    if(!_savedView) _savedView={c:map.getCenter(),z:map.getZoom()};
-    map.invalidateSize(false); map.fitBounds(window.COLORED_BOUNDS,{padding:[10,10],animate:false});}}
-function restaurarView(){if(_savedView){map.setView(_savedView.c,_savedView.z,{animate:false});_savedView=null;}}
-function imprimirMapa(){fitParaImpressao();setTimeout(()=>window.print(),350);}
-window.addEventListener('beforeprint',fitParaImpressao);
-window.addEventListener('afterprint',restaurarView);
+// Impressão WYSIWYG: imprime no MESMO zoom/posição que está na tela (não reajusta sozinho)
+function prepararImpressao(){info.style.display='none'; map.invalidateSize(false);}
+function imprimirMapa(){prepararImpressao(); setTimeout(()=>window.print(),300);}
+window.addEventListener('beforeprint',prepararImpressao);
 document.getElementById('q').addEventListener('input',e=>{const q=norm(e.target.value);
   if(q.length<2)return; for(const k in byName){ if(k.includes(q)){const l=byName[k];
      map.fitBounds(l.getBounds(),{maxZoom:11}); l.fire('mouseover'); break;}}});
