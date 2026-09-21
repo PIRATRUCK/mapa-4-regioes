@@ -552,7 +552,7 @@
     "nome": "Ribeirão Branco"
   },
   "DOIS CORREGOS": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Sem vendedor",
     "pin": 4,
     "nome": "Dois Corregos"
@@ -600,7 +600,7 @@
     "nome": "São Miguel Arcanjo"
   },
   "TORRINHA": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Sem vendedor",
     "pin": 5,
     "nome": "Torrinha"
@@ -612,7 +612,7 @@
     "nome": "Sarapui"
   },
   "MINEIROS DO TIETE": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Sem vendedor",
     "pin": 0,
     "nome": "Mineiro do Tiete"
