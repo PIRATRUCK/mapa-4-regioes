@@ -1,6 +1,6 @@
 {
   "AMERICANA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 22,
     "nome": "Americana"
@@ -138,7 +138,7 @@
     "nome": "Descalvado"
   },
   "BOITUVA": {
-    "mr": "R3",
+    "mr": "R4",
     "vend": "Danilo",
     "pin": 79,
     "nome": "Boituva"
@@ -510,7 +510,7 @@
     "nome": "Araraquara"
   },
   "PORTO FELIZ": {
-    "mr": "R3",
+    "mr": "R4",
     "vend": "Danilo",
     "pin": 9,
     "nome": "Porto Feliz"
@@ -540,7 +540,7 @@
     "nome": "Ribeira"
   },
   "JAU": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Sem vendedor",
     "pin": 22,
     "nome": "Jaú"
@@ -588,7 +588,7 @@
     "nome": "Salto de Pirapora"
   },
   "IGARACU DO TIETE": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Sem vendedor",
     "pin": 5,
     "nome": "Igaraçu do Tiete"
