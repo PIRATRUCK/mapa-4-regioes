@@ -54,7 +54,7 @@
     "nome": "Angatuba"
   },
   "CORDEIROPOLIS": {
-    "mr": "R1",
+    "mr": "R2",
     "vend": "Odair",
     "pin": 47,
     "nome": "Cordeirópolis"
@@ -504,7 +504,7 @@
     "nome": "Porangaba"
   },
   "ARARAQUARA": {
-    "mr": "R2",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 71,
     "nome": "Araraquara"
