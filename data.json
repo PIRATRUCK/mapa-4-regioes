@@ -150,7 +150,7 @@
     "nome": "Indaiatuba"
   },
   "DOURADO": {
-    "mr": "R2",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 2,
     "nome": "Dourado"
@@ -360,7 +360,7 @@
     "nome": "Iporanga"
   },
   "RIBEIRAO BONITO": {
-    "mr": "R2",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 17,
     "nome": "Ribeirão Bonito"
@@ -516,7 +516,7 @@
     "nome": "Porto Feliz"
   },
   "BOA ESPERANCA DO SUL": {
-    "mr": "R2",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 2,
     "nome": "Boa Esperança"
@@ -528,7 +528,7 @@
     "nome": "Quadra"
   },
   "TRABIJU": {
-    "mr": "R2",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 0,
     "nome": "Trabiju"
