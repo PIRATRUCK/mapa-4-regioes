@@ -54,7 +54,7 @@
     "nome": "Angatuba"
   },
   "CORDEIROPOLIS": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Odair",
     "pin": 47,
     "nome": "Cordeirópolis"
@@ -162,7 +162,7 @@
     "nome": "Bom Sucesso do Itararé"
   },
   "IRACEMAPOLIS": {
-    "mr": "R2",
+    "mr": "R4",
     "vend": "Odair",
     "pin": 25,
     "nome": "Iracemápolis"
