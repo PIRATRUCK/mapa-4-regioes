@@ -1,12 +1,12 @@
 {
   "AMERICANA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Elisângela",
     "pin": 22,
     "nome": "Americana"
   },
   "AGUAS DE SAO PEDRO": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 0,
     "nome": "Aguas de São Pedro"
@@ -24,7 +24,7 @@
     "nome": "Artur Nogueira"
   },
   "ANHEMBI": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 0,
     "nome": "Anhembi"
@@ -36,13 +36,13 @@
     "nome": "Aluminio"
   },
   "CAMPINAS": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 171,
     "nome": "Campinas"
   },
   "BOFETE": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 0,
     "nome": "Bofete"
@@ -54,13 +54,13 @@
     "nome": "Angatuba"
   },
   "CORDEIROPOLIS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 47,
     "nome": "Cordeirópolis"
   },
   "BOTUCATU": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 36,
     "nome": "Botucatu"
@@ -78,7 +78,7 @@
     "nome": "Cosmópolis"
   },
   "CAPIVARI": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 14,
     "nome": "Capivari"
@@ -90,13 +90,13 @@
     "nome": "Aracoiaba da Serra"
   },
   "ELIAS FAUSTO": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Danilo",
     "pin": 3,
     "nome": "Elias Fausto"
   },
   "CHARQUEADA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 2,
     "nome": "Charqueada"
@@ -114,7 +114,7 @@
     "nome": "Eng. Coelho"
   },
   "CONCHAS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 2,
     "nome": "Conchas"
@@ -126,7 +126,7 @@
     "nome": "Barra do Turvo"
   },
   "HORTOLANDIA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 34,
     "nome": "Hortolândia"
@@ -138,13 +138,13 @@
     "nome": "Descalvado"
   },
   "BOITUVA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 79,
     "nome": "Boituva"
   },
   "INDAIATUBA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Danilo",
     "pin": 81,
     "nome": "Indaiatuba"
@@ -162,7 +162,7 @@
     "nome": "Bom Sucesso do Itararé"
   },
   "IRACEMAPOLIS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 25,
     "nome": "Iracemápolis"
@@ -180,13 +180,13 @@
     "nome": "Buri"
   },
   "ITUPEVA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 60,
     "nome": "Itupeva"
   },
   "ITATINGA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Laerço",
     "pin": 4,
     "nome": "Itatinga"
@@ -216,13 +216,13 @@
     "nome": "Capão Bonito"
   },
   "LOUVEIRA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 10,
     "nome": "Louveira"
   },
   "LARANJAL PAULISTA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 4,
     "nome": "Laranjal Paulista"
@@ -234,13 +234,13 @@
     "nome": "Capela do Alto"
   },
   "MONTE MOR": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Danilo",
     "pin": 18,
     "nome": "Monte Mor"
   },
   "MOMBUCA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 3,
     "nome": "Mobuca"
@@ -252,31 +252,31 @@
     "nome": "Cequilho"
   },
   "NOVA ODESSA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 19,
     "nome": "Nova Odessa"
   },
   "PARDINHO": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 5,
     "nome": "Pardinho"
   },
   "CESARIO LANGE": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 3,
     "nome": "Cesario Lange"
   },
   "PAULINIA": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 121,
     "nome": "Paulinia"
   },
   "PIRACICABA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 131,
     "nome": "Piracicaba"
@@ -288,7 +288,7 @@
     "nome": "Eldorado"
   },
   "SANTA BARBARA D'OESTE": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 26,
     "nome": "Santa Barbara D'oeste"
@@ -306,7 +306,7 @@
     "nome": "Guapiara"
   },
   "SUMARE": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 97,
     "nome": "Sumaré"
@@ -324,13 +324,13 @@
     "nome": "Guarei"
   },
   "VALINHOS": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 54,
     "nome": "Valinhos"
   },
   "PRATANIA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 14,
     "nome": "Pratânia"
@@ -342,13 +342,13 @@
     "nome": "Iperó"
   },
   "VINHEDO": {
-    "mr": "R1",
+    "mr": "R4",
     "vend": "Elisângela",
     "pin": 18,
     "nome": "Vinhedo"
   },
   "RAFARD": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 120,
     "nome": "Rafard"
@@ -372,7 +372,7 @@
     "nome": "Itaoca"
   },
   "RIO DAS PEDRAS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 7,
     "nome": "Rio das Pedras"
@@ -384,7 +384,7 @@
     "nome": "Itapetininga"
   },
   "SALTINHO": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 5,
     "nome": "Saltinho"
@@ -396,7 +396,7 @@
     "nome": "Itapeva"
   },
   "SANTA MARIA DA SERRA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 11,
     "nome": "Santa Maria da Serra"
@@ -420,19 +420,19 @@
     "nome": "Itu"
   },
   "SAO MANUEL": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 24,
     "nome": "São Manuel"
   },
   "JUMIRIM": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 0,
     "nome": "Jumirim"
   },
   "SAO PEDRO": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Odair",
     "pin": 8,
     "nome": "São Pedro"
@@ -456,13 +456,13 @@
     "nome": "Nova Campina"
   },
   "SANTA GERTRUDES": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 4,
     "nome": "Santa Gertrudes"
   },
   "PEREIRAS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 1,
     "nome": "Pereiras"
@@ -498,7 +498,7 @@
     "nome": "Ipeuna"
   },
   "PORANGABA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 0,
     "nome": "Porangaba"
@@ -510,7 +510,7 @@
     "nome": "Araraquara"
   },
   "PORTO FELIZ": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Danilo",
     "pin": 9,
     "nome": "Porto Feliz"
@@ -522,7 +522,7 @@
     "nome": "Boa Esperança"
   },
   "QUADRA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Laerço",
     "pin": 0,
     "nome": "Quadra"
@@ -540,7 +540,7 @@
     "nome": "Ribeira"
   },
   "JAU": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 22,
     "nome": "Jaú"
@@ -552,7 +552,7 @@
     "nome": "Ribeirão Branco"
   },
   "DOIS CORREGOS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 4,
     "nome": "Dois Corregos"
@@ -564,7 +564,7 @@
     "nome": "Ribeirão Grande"
   },
   "BROTAS": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 7,
     "nome": "Brotas"
@@ -588,7 +588,7 @@
     "nome": "Salto de Pirapora"
   },
   "IGARACU DO TIETE": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 5,
     "nome": "Igaraçu do Tiete"
@@ -600,7 +600,7 @@
     "nome": "São Miguel Arcanjo"
   },
   "TORRINHA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 5,
     "nome": "Torrinha"
@@ -612,7 +612,7 @@
     "nome": "Sarapui"
   },
   "MINEIROS DO TIETE": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Sem vendedor",
     "pin": 0,
     "nome": "Mineiro do Tiete"
@@ -678,7 +678,7 @@
     "nome": "Tiete"
   },
   "TORRE DE PEDRA": {
-    "mr": "R4",
+    "mr": "R1",
     "vend": "Laerço",
     "pin": 1,
     "nome": "Torre da Pedra"

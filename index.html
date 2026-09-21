@@ -73,7 +73,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const MRC={R1:'#43a047',R2:'#f6c700',R3:'#1e88e5',R4:'#8e24aa'};
-const MRNAME={R1:'R1 — Campinas',R2:'R2 — Araraquara (+Limeira)',R3:'R3 — Sorocaba/Itapeva',R4:'R4 — Piracicaba'};
+const MRNAME={R1:'R1 — Piracicaba',R2:'R2 — Araraquara (+Limeira)',R3:'R3 — Sorocaba/Itapeva',R4:'R4 — Campinas'};
 const MRLIST=['R1','R2','R3','R4'];
 function norm(s){return (''+s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\./g,' ').replace(/\s+/g,' ').trim();}
 const map=L.map('map',{preferCanvas:true}).setView([-22.9,-47.6],8);
