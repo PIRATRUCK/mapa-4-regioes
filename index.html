@@ -43,7 +43,7 @@
     .leaflet-container{background:#fff!important}
   }
 </style></head><body>
-<div class="titlebar"><button class="print-btn" onclick="imprimirMapa()">🖨️ Imprimir</button>🗺️ PIRATRUCK — Cenário 4 Regiões (+1 vendedor) · <span style="font-weight:normal">R1 verde · R2 amarelo · R3 azul · R4 roxo</span></div>
+<div class="titlebar"><button class="print-btn" onclick="imprimirMapa()">🖨️ Imprimir</button>🗺️ PIRATRUCK — Cenário 4 Regiões (+1 vendedor) · <span style="font-weight:normal">R1 roxo · R2 amarelo · R3 azul · R4 verde</span></div>
 <div id="map"></div>
 <div class="panel" id="search"><input id="q" placeholder="🔎 buscar cidade..." autocomplete="off"></div>
 <div class="panel" id="filtro">
@@ -72,7 +72,7 @@
 <div class="panel" id="legend"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const MRC={R1:'#43a047',R2:'#f6c700',R3:'#1e88e5',R4:'#8e24aa'};
+const MRC={R1:'#8e24aa',R2:'#f6c700',R3:'#1e88e5',R4:'#43a047'};
 const MRNAME={R1:'R1 — Piracicaba',R2:'R2 — Araraquara (+Limeira)',R3:'R3 — Sorocaba/Itapeva',R4:'R4 — Campinas'};
 const MRLIST=['R1','R2','R3','R4'];
 function norm(s){return (''+s).normalize('NFD').replace(/[̀-ͯ]/g,'').toUpperCase().replace(/\./g,' ').replace(/\s+/g,' ').trim();}
