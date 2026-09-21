@@ -138,7 +138,7 @@
     "nome": "Descalvado"
   },
   "BOITUVA": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 79,
     "nome": "Boituva"
@@ -246,7 +246,7 @@
     "nome": "Mobuca"
   },
   "CERQUILHO": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 5,
     "nome": "Cequilho"
@@ -318,7 +318,7 @@
     "nome": "Porto Ferreira"
   },
   "GUAREI": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Laerço",
     "pin": 0,
     "nome": "Guarei"
@@ -414,7 +414,7 @@
     "nome": "São Carlos"
   },
   "ITU": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 48,
     "nome": "Itu"
@@ -510,7 +510,7 @@
     "nome": "Araraquara"
   },
   "PORTO FELIZ": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 9,
     "nome": "Porto Feliz"
@@ -570,7 +570,7 @@
     "nome": "Brotas"
   },
   "SALTO": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 28,
     "nome": "Salto"
@@ -666,13 +666,13 @@
     "nome": "Sta Cruz das Palmeiras"
   },
   "TATUI": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Laerço",
     "pin": 42,
     "nome": "Tatuí"
   },
   "TIETE": {
-    "mr": "R4",
+    "mr": "R3",
     "vend": "Danilo",
     "pin": 19,
     "nome": "Tiete"
