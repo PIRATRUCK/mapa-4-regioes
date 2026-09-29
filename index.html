@@ -24,10 +24,6 @@
   #filtro .tot b{display:inline;color:#C00000}
   #filtro .mini{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:#333;cursor:pointer;user-select:none}
   #filtro .lnk{color:#1e88e5;cursor:pointer;font-size:11px;margin-top:6px;display:inline-block}
-  #fonte{display:flex;gap:4px;margin-bottom:8px}
-  .fonte-bt{flex:1;padding:5px 4px;border:1px solid #ccc;background:#f7f7f7;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer;color:#555}
-  .fonte-bt.on{background:#C00000;color:#fff;border-color:#C00000}
-  #filtroCorpo.dim{opacity:.45;pointer-events:none}
   .leaflet-tooltip.city{font-weight:bold}
   .leaflet-tooltip.citylabel{background:transparent;border:none;box-shadow:none;color:#3b3b3b;opacity:.85;font-size:9px;font-weight:600;padding:0;white-space:nowrap;text-shadow:0 0 2px rgba(255,255,255,.9)}
   .leaflet-tooltip.citylabel::before{display:none}
@@ -47,25 +43,8 @@
 <div id="map"></div>
 <div class="panel" id="search"><input id="q" placeholder="🔎 buscar cidade..." autocomplete="off"></div>
 <div class="panel" id="filtro">
-  <b>🎛️ Filtro de emplacamentos (2026)</b>
-  <div id="fonte">
-    <button class="fonte-bt on" id="btEmplac">📄 Planilha 2026</button>
-    <button class="fonte-bt" id="btPinos">📌 Formato anterior</button>
-  </div>
-  <div id="filtroCorpo">
-  <label>Marca</label>
-  <select id="fMarca">
-    <option value="T">Todas as marcas</option>
-    <option value="G">Só Guerra (nossa)</option>
-    <option value="C">Só concorrentes</option>
-  </select>
-  <label>Fabricante</label>
-  <select id="fFab"><option value="">Todos</option></select>
-  <label>Segmento (família de produto)</label>
-  <select id="fFam"><option value="">Todos</option></select>
+  <b>🎛️ Potencial por cidade</b>
   <div class="tot" id="fTot">—</div>
-  <span class="lnk" id="fLimpar">↺ limpar filtro</span>
-  </div>
   <label class="mini"><input type="checkbox" id="fHeat" style="width:auto"> 🔥 destacar volume (10+ em destaque)</label>
 </div>
 <div class="panel" id="info"></div>
@@ -80,8 +59,7 @@ const map=L.map('map',{preferCanvas:true}).setView([-22.9,-47.6],8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
   attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
 let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
-let EMPLAC={fabs:[],fams:[],rows:[]};
-let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null, MODE='emplac';
+let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
 const info=document.getElementById('info');
 
 function style(f){const key=norm(f.properties.name);const d=REG[key];
@@ -96,7 +74,7 @@ function style(f){const key=norm(f.properties.name);const d=REG[key];
 
 function showInfo(d,key){CURKEY=key;info.style.display='block';
   const q=FCOUNTS[key]||0;
-  const lbl=MODE==='pinos'?'Pinos (formato anterior)':'Emplac. no filtro';
+  const lbl='Pinos';
   info.innerHTML=`<h3>${d.nome}</h3>
    <div class="row"><span class="k">Macrorregião:</span> <b style="color:${MRC[d.mr]}">${d.mr}</b></div>
    <div class="row"><span class="k">Vendedor:</span> <b>${d.vend}</b></div>
@@ -111,48 +89,19 @@ function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)r
 
 Promise.all([
   fetch('data.json').then(r=>r.json()),
-  fetch('sp_mun.json').then(r=>r.json()),
-  fetch('emplac.json').then(r=>r.json()).catch(()=>({fabs:[],fams:[],rows:[]}))
-]).then(([reg,gj,emp])=>{
-  REG=reg; EMPLAC=emp;
+  fetch('sp_mun.json').then(r=>r.json())
+]).then(([reg,gj])=>{
+  REG=reg;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
   const b=L.latLngBounds([]); layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(d)b.extend(l.getBounds());});
   window.COLORED_BOUNDS=b; map.fitBounds(b,{padding:[20,20]});
-  popularSelects();
   aplicarFiltro();
 });
 
-function volPorFab(){const m={};EMPLAC.rows.forEach(r=>{m[r[1]]=(m[r[1]]||0)+r[4];});return m;}
-function volPorFam(){const m={};EMPLAC.rows.forEach(r=>{m[r[2]]=(m[r[2]]||0)+r[4];});return m;}
-function popularSelects(){
-  const vf=volPorFab(), vm=volPorFam();
-  const fab=document.getElementById('fFab');
-  EMPLAC.fabs.map((n,i)=>[n,i]).sort((a,b)=>(vf[b[1]]||0)-(vf[a[1]]||0))
-    .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vf[i]||0)+')';fab.appendChild(o);});
-  const fam=document.getElementById('fFam');
-  EMPLAC.fams.map((n,i)=>[n,i]).sort((a,b)=>(vm[b[1]]||0)-(vm[a[1]]||0))
-    .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vm[i]||0)+')';fam.appendChild(o);});
-}
-
 function aplicarFiltro(){
   FCOUNTS={}; let tot=0;
-  if(MODE==='pinos'){
-    for(const k in REG){ const q=REG[k].pin||0; FCOUNTS[k]=q; tot+=q; }
-    document.getElementById('fTot').innerHTML=`Formato anterior: <b>${tot}</b> pinos · <b>${Object.keys(REG).length}</b> cidades`;
-  } else {
-    const marca=document.getElementById('fMarca').value;
-    const fab=document.getElementById('fFab').value;
-    const fam=document.getElementById('fFam').value;
-    const fabN=fab===''?null:+fab, famN=fam===''?null:+fam;
-    for(const r of EMPLAC.rows){
-      if(marca==='G'&&r[3]!==0)continue;
-      if(marca==='C'&&r[3]!==1)continue;
-      if(fabN!==null&&r[1]!==fabN)continue;
-      if(famN!==null&&r[2]!==famN)continue;
-      FCOUNTS[r[0]]=(FCOUNTS[r[0]]||0)+r[4]; tot+=r[4];
-    }
-    document.getElementById('fTot').innerHTML=`No filtro: <b>${tot}</b> emplac. · <b>${Object.keys(FCOUNTS).filter(k=>REG[k]).length}</b> cidades`;
-  }
+  for(const k in REG){ const q=REG[k].pin||0; FCOUNTS[k]=q; tot+=q; }
+  document.getElementById('fTot').innerHTML=`<b>${tot}</b> pinos · <b>${Object.keys(REG).length}</b> cidades`;
   FMAX=1; for(const k in FCOUNTS){ if(REG[k]&&FCOUNTS[k]>FMAX)FMAX=FCOUNTS[k]; }
   for(const key in byName){
     const d=REG[key]; const q=FCOUNTS[key]||0;
@@ -162,27 +111,18 @@ function aplicarFiltro(){
   atualizarLegenda();
   if(CURKEY&&REG[CURKEY]) showInfo(REG[CURKEY],CURKEY);
 }
-function setMode(m){
-  MODE=m;
-  document.getElementById('btEmplac').classList.toggle('on',m==='emplac');
-  document.getElementById('btPinos').classList.toggle('on',m==='pinos');
-  document.getElementById('filtroCorpo').classList.toggle('dim',m==='pinos');
-  aplicarFiltro();
-}
 
 function atualizarLegenda(){
   const cntCity={R1:0,R2:0,R3:0,R4:0}, cntEmp={R1:0,R2:0,R3:0,R4:0};
   Object.entries(REG).forEach(([k,d])=>{cntCity[d.mr]++; cntEmp[d.mr]+=(FCOUNTS[k]||0);});
   const ord=MRLIST.slice().sort((a,b)=>cntEmp[b]-cntEmp[a]);
   const lider=ord[0], total=MRLIST.reduce((s,m)=>s+cntEmp[m],0);
-  const famSel=document.getElementById('fFam');
-  const segNome=famSel.value===''?'todos os segmentos':famSel.options[famSel.selectedIndex].textContent.replace(/\s*\(\d+\)$/,'');
   const el=document.getElementById('legend');
-  const unid=MODE==='pinos'?'pinos':'emplac.';
+  const unid='pinos';
   let head='';
   if(total>0){
     const pct=Math.round(100*cntEmp[lider]/total);
-    const txt=MODE==='pinos'?`<b>${lider}</b> tem mais <b>pinos</b> (formato anterior)`:`<b>${lider}</b> lidera em <b>${segNome}</b>`;
+    const txt=`<b>${lider}</b> tem mais <b>pinos</b>`;
     head=`<div style="background:${MRC[lider]}22;border-left:4px solid ${MRC[lider]};border-radius:4px;padding:4px 7px;margin-bottom:6px;font-size:12px">
       🏆 ${txt}<br><span class="k">${cntEmp[lider]} de ${total} ${unid} (${pct}%)</span></div>`;
   }
@@ -193,15 +133,7 @@ function atualizarLegenda(){
     e.classList.toggle('off',!shown[m]); layer.setStyle(style);});
 }
 
-document.getElementById('btEmplac').addEventListener('click',()=>setMode('emplac'));
-document.getElementById('btPinos').addEventListener('click',()=>setMode('pinos'));
-document.getElementById('fMarca').addEventListener('change',aplicarFiltro);
-document.getElementById('fFab').addEventListener('change',aplicarFiltro);
-document.getElementById('fFam').addEventListener('change',aplicarFiltro);
 document.getElementById('fHeat').addEventListener('change',e=>{HEAT=e.target.checked; if(layer)layer.setStyle(style);});
-document.getElementById('fLimpar').addEventListener('click',()=>{
-  document.getElementById('fMarca').value='T';document.getElementById('fFab').value='';document.getElementById('fFam').value='';
-  aplicarFiltro();});
 
 // Impressão WYSIWYG: imprime no MESMO zoom/posição que está na tela (não reajusta sozinho)
 function prepararImpressao(){info.style.display='none'; map.invalidateSize(false);}
