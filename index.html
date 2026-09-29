@@ -44,18 +44,7 @@
 <div class="panel" id="search"><input id="q" placeholder="🔎 buscar cidade..." autocomplete="off"></div>
 <div class="panel" id="filtro">
   <b>🎛️ Potencial por cidade</b>
-  <label>Marca</label>
-  <select id="fMarca">
-    <option value="T">Todas as marcas</option>
-    <option value="G">Só Guerra (nossa)</option>
-    <option value="C">Só concorrentes</option>
-  </select>
-  <label>Fabricante</label>
-  <select id="fFab"><option value="">Todos</option></select>
-  <label>Segmento (família de produto)</label>
-  <select id="fFam"><option value="">Todos</option></select>
   <div class="tot" id="fTot">—</div>
-  <span class="lnk" id="fLimpar">↺ voltar pro formato anterior (pinos)</span>
   <label class="mini"><input type="checkbox" id="fHeat" style="width:auto"> 🔥 destacar volume (10+ em destaque)</label>
 </div>
 <div class="panel" id="info"></div>
@@ -70,11 +59,7 @@ const map=L.map('map',{preferCanvas:true}).setView([-22.9,-47.6],8);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
   attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
 let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
-let EMPLAC={fabs:[],fams:[],rows:[]};
 let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
-function filtroAtivo(){
-  return document.getElementById('fMarca').value!=='T' || document.getElementById('fFab').value!=='' || document.getElementById('fFam').value!=='';
-}
 const info=document.getElementById('info');
 
 function style(f){const key=norm(f.properties.name);const d=REG[key];
@@ -89,7 +74,7 @@ function style(f){const key=norm(f.properties.name);const d=REG[key];
 
 function showInfo(d,key){CURKEY=key;info.style.display='block';
   const q=FCOUNTS[key]||0;
-  const lbl=filtroAtivo()?'Emplac. no filtro':'Pinos (formato anterior)';
+  const lbl='Pinos';
   info.innerHTML=`<h3>${d.nome}</h3>
    <div class="row"><span class="k">Macrorregião:</span> <b style="color:${MRC[d.mr]}">${d.mr}</b></div>
    <div class="row"><span class="k">Vendedor:</span> <b>${d.vend}</b></div>
@@ -104,48 +89,19 @@ function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)r
 
 Promise.all([
   fetch('data.json').then(r=>r.json()),
-  fetch('sp_mun.json').then(r=>r.json()),
-  fetch('emplac.json').then(r=>r.json()).catch(()=>({fabs:[],fams:[],rows:[]}))
-]).then(([reg,gj,emp])=>{
-  REG=reg; EMPLAC=emp;
+  fetch('sp_mun.json').then(r=>r.json())
+]).then(([reg,gj])=>{
+  REG=reg;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
   const b=L.latLngBounds([]); layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(d)b.extend(l.getBounds());});
   window.COLORED_BOUNDS=b; map.fitBounds(b,{padding:[20,20]});
-  popularSelects();
   aplicarFiltro();
 });
 
-function volPorFab(){const m={};EMPLAC.rows.forEach(r=>{m[r[1]]=(m[r[1]]||0)+r[4];});return m;}
-function volPorFam(){const m={};EMPLAC.rows.forEach(r=>{m[r[2]]=(m[r[2]]||0)+r[4];});return m;}
-function popularSelects(){
-  const vf=volPorFab(), vm=volPorFam();
-  const fab=document.getElementById('fFab');
-  EMPLAC.fabs.map((n,i)=>[n,i]).sort((a,b)=>(vf[b[1]]||0)-(vf[a[1]]||0))
-    .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vf[i]||0)+')';fab.appendChild(o);});
-  const fam=document.getElementById('fFam');
-  EMPLAC.fams.map((n,i)=>[n,i]).sort((a,b)=>(vm[b[1]]||0)-(vm[a[1]]||0))
-    .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vm[i]||0)+')';fam.appendChild(o);});
-}
-
 function aplicarFiltro(){
   FCOUNTS={}; let tot=0;
-  if(!filtroAtivo()){
-    for(const k in REG){ const q=REG[k].pin||0; FCOUNTS[k]=q; tot+=q; }
-    document.getElementById('fTot').innerHTML=`Formato anterior: <b>${tot}</b> pinos · <b>${Object.keys(REG).length}</b> cidades`;
-  } else {
-    const marca=document.getElementById('fMarca').value;
-    const fab=document.getElementById('fFab').value;
-    const fam=document.getElementById('fFam').value;
-    const fabN=fab===''?null:+fab, famN=fam===''?null:+fam;
-    for(const r of EMPLAC.rows){
-      if(marca==='G'&&r[3]!==0)continue;
-      if(marca==='C'&&r[3]!==1)continue;
-      if(fabN!==null&&r[1]!==fabN)continue;
-      if(famN!==null&&r[2]!==famN)continue;
-      FCOUNTS[r[0]]=(FCOUNTS[r[0]]||0)+r[4]; tot+=r[4];
-    }
-    document.getElementById('fTot').innerHTML=`No filtro: <b>${tot}</b> emplac. · <b>${Object.keys(FCOUNTS).filter(k=>REG[k]).length}</b> cidades`;
-  }
+  for(const k in REG){ const q=REG[k].pin||0; FCOUNTS[k]=q; tot+=q; }
+  document.getElementById('fTot').innerHTML=`<b>${tot}</b> pinos · <b>${Object.keys(REG).length}</b> cidades`;
   FMAX=1; for(const k in FCOUNTS){ if(REG[k]&&FCOUNTS[k]>FMAX)FMAX=FCOUNTS[k]; }
   for(const key in byName){
     const d=REG[key]; const q=FCOUNTS[key]||0;
@@ -162,12 +118,11 @@ function atualizarLegenda(){
   const ord=MRLIST.slice().sort((a,b)=>cntEmp[b]-cntEmp[a]);
   const lider=ord[0], total=MRLIST.reduce((s,m)=>s+cntEmp[m],0);
   const el=document.getElementById('legend');
-  const ativo=filtroAtivo();
-  const unid=ativo?'emplac.':'pinos';
+  const unid='pinos';
   let head='';
   if(total>0){
     const pct=Math.round(100*cntEmp[lider]/total);
-    const txt=ativo?`<b>${lider}</b> lidera no filtro`:`<b>${lider}</b> tem mais <b>pinos</b> (formato anterior)`;
+    const txt=`<b>${lider}</b> tem mais <b>pinos</b>`;
     head=`<div style="background:${MRC[lider]}22;border-left:4px solid ${MRC[lider]};border-radius:4px;padding:4px 7px;margin-bottom:6px;font-size:12px">
       🏆 ${txt}<br><span class="k">${cntEmp[lider]} de ${total} ${unid} (${pct}%)</span></div>`;
   }
@@ -178,13 +133,7 @@ function atualizarLegenda(){
     e.classList.toggle('off',!shown[m]); layer.setStyle(style);});
 }
 
-document.getElementById('fMarca').addEventListener('change',aplicarFiltro);
-document.getElementById('fFab').addEventListener('change',aplicarFiltro);
-document.getElementById('fFam').addEventListener('change',aplicarFiltro);
 document.getElementById('fHeat').addEventListener('change',e=>{HEAT=e.target.checked; if(layer)layer.setStyle(style);});
-document.getElementById('fLimpar').addEventListener('click',()=>{
-  document.getElementById('fMarca').value='T';document.getElementById('fFab').value='';document.getElementById('fFam').value='';
-  aplicarFiltro();});
 
 // Impressão WYSIWYG: imprime no MESMO zoom/posição que está na tela (não reajusta sozinho)
 function prepararImpressao(){info.style.display='none'; map.invalidateSize(false);}
