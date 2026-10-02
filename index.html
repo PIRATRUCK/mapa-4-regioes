@@ -24,6 +24,8 @@
   #filtro .tot b{display:inline;color:#C00000}
   #filtro .mini{display:flex;gap:6px;align-items:center;margin-top:8px;font-size:12px;color:#333;cursor:pointer;user-select:none}
   #filtro .lnk{color:#1e88e5;cursor:pointer;font-size:11px;margin-top:6px;display:inline-block}
+  #fFam label{display:flex;align-items:center;gap:5px;font-weight:normal;text-transform:none;letter-spacing:0;font-size:12px;color:#333;margin:2px 0;cursor:pointer}
+  #fFam input{width:auto;margin:0}
   .leaflet-tooltip.city{font-weight:bold}
   .leaflet-tooltip.citylabel{background:transparent;border:none;box-shadow:none;color:#3b3b3b;opacity:.85;font-size:9px;font-weight:600;padding:0;white-space:nowrap;text-shadow:0 0 2px rgba(255,255,255,.9)}
   .leaflet-tooltip.citylabel::before{display:none}
@@ -52,8 +54,8 @@
   </select>
   <label>Fabricante</label>
   <select id="fFab"><option value="">Todos</option></select>
-  <label>Segmento (família de produto)</label>
-  <select id="fFam"><option value="">Todos</option></select>
+  <label>Segmento (família de produto) <span class="lnk" id="fFamTodos" style="margin:0">marcar/limpar todos</span></label>
+  <div id="fFam" style="max-height:130px;overflow-y:auto;border:1px solid #ccc;border-radius:5px;padding:4px 6px;background:#fafafa"></div>
   <div class="tot" id="fTot">—</div>
   <span class="lnk" id="fLimpar">↺ voltar pro formato anterior (pinos)</span>
   <label class="mini"><input type="checkbox" id="fHeat" style="width:auto"> 🔥 destacar volume (10+ em destaque)</label>
@@ -72,8 +74,11 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
 let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
 let EMPLAC={fabs:[],fams:[],rows:[]};
 let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
+function famSelecionados(){
+  return Array.from(document.querySelectorAll('#fFam input:checked')).map(el=>+el.value);
+}
 function filtroAtivo(){
-  return document.getElementById('fMarca').value!=='T' || document.getElementById('fFab').value!=='' || document.getElementById('fFam').value!=='';
+  return document.getElementById('fMarca').value!=='T' || document.getElementById('fFab').value!=='' || famSelecionados().length>0;
 }
 const info=document.getElementById('info');
 
@@ -124,7 +129,10 @@ function popularSelects(){
     .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vf[i]||0)+')';fab.appendChild(o);});
   const fam=document.getElementById('fFam');
   EMPLAC.fams.map((n,i)=>[n,i]).sort((a,b)=>(vm[b[1]]||0)-(vm[a[1]]||0))
-    .forEach(([n,i])=>{if(!n||n==='?')return;const o=document.createElement('option');o.value=i;o.textContent=n+' ('+(vm[i]||0)+')';fam.appendChild(o);});
+    .forEach(([n,i])=>{if(!n||n==='?')return;
+      const lbl=document.createElement('label');
+      lbl.innerHTML=`<input type="checkbox" value="${i}"> ${n} (${vm[i]||0})`;
+      fam.appendChild(lbl);});
 }
 
 function aplicarFiltro(){
@@ -135,13 +143,13 @@ function aplicarFiltro(){
   } else {
     const marca=document.getElementById('fMarca').value;
     const fab=document.getElementById('fFab').value;
-    const fam=document.getElementById('fFam').value;
-    const fabN=fab===''?null:+fab, famN=fam===''?null:+fam;
+    const famSel=famSelecionados();
+    const fabN=fab===''?null:+fab;
     for(const r of EMPLAC.rows){
       if(marca==='G'&&r[3]!==0)continue;
       if(marca==='C'&&r[3]!==1)continue;
       if(fabN!==null&&r[1]!==fabN)continue;
-      if(famN!==null&&r[2]!==famN)continue;
+      if(famSel.length&&!famSel.includes(r[2]))continue;
       FCOUNTS[r[0]]=(FCOUNTS[r[0]]||0)+r[4]; tot+=r[4];
     }
     document.getElementById('fTot').innerHTML=`No filtro: <b>${tot}</b> emplac. · <b>${Object.keys(FCOUNTS).filter(k=>REG[k]).length}</b> cidades`;
@@ -183,7 +191,13 @@ document.getElementById('fFab').addEventListener('change',aplicarFiltro);
 document.getElementById('fFam').addEventListener('change',aplicarFiltro);
 document.getElementById('fHeat').addEventListener('change',e=>{HEAT=e.target.checked; if(layer)layer.setStyle(style);});
 document.getElementById('fLimpar').addEventListener('click',()=>{
-  document.getElementById('fMarca').value='T';document.getElementById('fFab').value='';document.getElementById('fFam').value='';
+  document.getElementById('fMarca').value='T';document.getElementById('fFab').value='';
+  document.querySelectorAll('#fFam input').forEach(c=>c.checked=false);
+  aplicarFiltro();});
+document.getElementById('fFamTodos').addEventListener('click',()=>{
+  const boxes=document.querySelectorAll('#fFam input');
+  const marcar=famSelecionados().length<boxes.length;
+  boxes.forEach(c=>c.checked=marcar);
   aplicarFiltro();});
 
 // Impressão WYSIWYG: imprime no MESMO zoom/posição que está na tela (não reajusta sozinho)
