@@ -8,8 +8,15 @@
   .titlebar{position:absolute;top:0;left:0;right:0;z-index:1000;background:#C00000;color:#fff;padding:8px 14px;font-weight:bold;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.3)}
   .panel{position:absolute;z-index:1000;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:10px 12px;font-size:13px}
   #legend{bottom:18px;right:12px;min-width:200px}
-  #info{top:52px;right:12px;width:230px;display:none}
+  #info{top:52px;right:12px;width:260px;max-height:80vh;overflow-y:auto;display:none}
   #info h3{margin:0 0 4px;font-size:15px;color:#C00000}
+  #info .det{margin-top:8px;border-top:1px solid #eee;padding-top:6px}
+  #info .det .grp{margin:0 0 6px}
+  #info .det .grpt{font-weight:bold;font-size:12px}
+  #info .det .cli{font-size:11.5px;color:#444;margin:1px 0 1px 8px}
+  #info .det .mais{font-size:11px;color:#999;margin-left:8px}
+  #info .det .aviso{font-size:10px;color:#999;margin-top:6px;line-height:1.3}
+  #info .det .vazio{font-size:11.5px;color:#888}
   .lg{display:flex;align-items:center;gap:8px;cursor:pointer;margin:4px 0;user-select:none}
   .sw{width:20px;height:20px;border:1px solid #333;border-radius:3px}
   .lg.off{opacity:.35}
@@ -73,6 +80,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
   attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
 let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
 let EMPLAC={fabs:[],fams:[],rows:[]};
+let CLIDET={meta:{},cidades:{}};
 let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
 function famSelecionados(){
   return Array.from(document.querySelectorAll('#fFam input:checked')).map(el=>+el.value);
@@ -92,13 +100,50 @@ function style(f){const key=norm(f.properties.name);const d=REG[key];
   }
   return {fillColor:MRC[d.mr],fillOpacity:op,color:bc,weight:wt,opacity:on?1:0.3};}
 
+function detalheCidade(key){
+  const lista=CLIDET.cidades[key];
+  if(!lista||!lista.length) return '<div class="det"><div class="vazio">Sem detalhe de cliente disponível para esta cidade.</div></div>';
+  const marca=document.getElementById('fMarca').value;
+  const fab=document.getElementById('fFab').value;
+  const famSel=famSelecionados();
+  const fabN=fab===''?null:+fab;
+  const ativo=filtroAtivo();
+  let itens=lista;
+  if(ativo){
+    itens=lista.filter(r=>{
+      if(marca==='G'&&r[2]!==0)return false;
+      if(marca==='C'&&r[2]!==1)return false;
+      if(fabN!==null&&r[0]!==fabN)return false;
+      if(famSel.length&&!famSel.includes(r[1]))return false;
+      return true;
+    });
+  }
+  if(!itens.length) return '<div class="det"><div class="vazio">Nenhum detalhe pro filtro atual nesta cidade.</div></div>';
+  const grupos={};
+  itens.forEach(r=>{const gk=r[0]+'|'+r[1]; (grupos[gk]=grupos[gk]||[]).push(r);});
+  const ordenados=Object.entries(grupos).map(([gk,rs])=>{
+    const tot=rs.reduce((s,r)=>s+r[4],0);
+    return {gk,rs:rs.sort((a,b)=>b[4]-a[4]),tot};
+  }).sort((a,b)=>b.tot-a.tot);
+  const html=ordenados.map(({gk,rs,tot})=>{
+    const [fi,mi]=gk.split('|').map(Number);
+    const fabNome=EMPLAC.fabs[fi]||'?', famNome=EMPLAC.fams[mi]||'?';
+    const top=rs.slice(0,6).map(r=>`<div class="cli">${r[3]}: <b>${r[4]}</b></div>`).join('');
+    const resto=rs.length>6?`<div class="mais">+${rs.length-6} outro(s) cliente(s)</div>`:'';
+    return `<div class="grp"><div class="grpt">${fabNome} — ${famNome}: ${tot}</div>${top}${resto}</div>`;
+  }).join('');
+  const aviso=`<div class="aviso">Fonte: ${CLIDET.meta.fonte||'?'} · snapshot ${CLIDET.meta.snapshot||'?'}. ${CLIDET.meta.aviso||''}</div>`;
+  return `<div class="det"><div class="grpt" style="margin-bottom:4px">📋 O que emplacou aqui</div>${html}${aviso}</div>`;
+}
+
 function showInfo(d,key){CURKEY=key;info.style.display='block';
   const q=FCOUNTS[key]||0;
   const lbl=filtroAtivo()?'Emplac. no filtro':'Pinos (formato anterior)';
   info.innerHTML=`<h3>${d.nome}</h3>
    <div class="row"><span class="k">Macrorregião:</span> <b style="color:${MRC[d.mr]}">${d.mr}</b></div>
    <div class="row"><span class="k">Vendedor:</span> <b>${d.vend}</b></div>
-   <div class="row"><span class="k">${lbl}:</span> <b>${q}</b></div>`;}
+   <div class="row"><span class="k">${lbl}:</span> <b>${q}</b></div>
+   ${detalheCidade(key)}`;}
 
 function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)return;
   byName[key]=l; keyByName[key]=key;
@@ -110,9 +155,10 @@ function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)r
 Promise.all([
   fetch('data.json').then(r=>r.json()),
   fetch('sp_mun.json').then(r=>r.json()),
-  fetch('emplac.json').then(r=>r.json()).catch(()=>({fabs:[],fams:[],rows:[]}))
-]).then(([reg,gj,emp])=>{
-  REG=reg; EMPLAC=emp;
+  fetch('emplac.json').then(r=>r.json()).catch(()=>({fabs:[],fams:[],rows:[]})),
+  fetch('cliente_detalhe.json').then(r=>r.json()).catch(()=>({meta:{},cidades:{}}))
+]).then(([reg,gj,emp,clidet])=>{
+  REG=reg; EMPLAC=emp; CLIDET=clidet;
   layer=L.geoJSON(gj,{style,onEachFeature:onEach,filter:f=>!!REG[norm(f.properties.name)]||true}).addTo(map);
   const b=L.latLngBounds([]); layer.eachLayer(l=>{const d=REG[norm(l.feature.properties.name)]; if(d)b.extend(l.getBounds());});
   window.COLORED_BOUNDS=b; map.fitBounds(b,{padding:[20,20]});
