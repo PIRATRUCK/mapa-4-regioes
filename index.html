@@ -82,6 +82,23 @@ let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
 let EMPLAC={fabs:[],fams:[],rows:[]};
 let CLIDET={meta:{},cidades:{}};
 let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
+let SHARE={perCity:{},totG:0,totAll:0};
+function computeShare(){
+  const fab=document.getElementById('fFab').value;
+  const famSel=famSelecionados();
+  const fabN=fab===''?null:+fab;
+  const perCity={}; let totG=0, totAll=0;
+  for(const r of EMPLAC.rows){
+    if(fabN!==null&&r[1]!==fabN)continue;
+    if(famSel.length&&!famSel.includes(r[2]))continue;
+    const ck=r[0];
+    const c=perCity[ck]=perCity[ck]||{g:0,t:0};
+    c.t+=r[4]; totAll+=r[4];
+    if(r[3]===0){ c.g+=r[4]; totG+=r[4]; }
+  }
+  return {perCity,totG,totAll};
+}
+function pct(g,t){return t>0?Math.round(1000*g/t)/10:null;}
 function famSelecionados(){
   return Array.from(document.querySelectorAll('#fFam input:checked')).map(el=>+el.value);
 }
@@ -136,6 +153,13 @@ function detalheCidade(key){
   return `<div class="det"><div class="grpt" style="margin-bottom:4px">📋 O que emplacou aqui</div>${html}${aviso}</div>`;
 }
 
+function shareCidadeHtml(key){
+  const s=SHARE.perCity[key];
+  const p=s?pct(s.g,s.t):null;
+  if(p===null) return `<div class="row"><span class="k">Participação Guerra aqui:</span> <b>sem dado</b></div>`;
+  return `<div class="row"><span class="k">Participação Guerra aqui:</span> <b style="color:#C00000">${p}%</b> <span class="k">(${s.g} de ${s.t})</span></div>`;
+}
+
 function showInfo(d,key){CURKEY=key;info.style.display='block';
   const q=FCOUNTS[key]||0;
   const lbl=filtroAtivo()?'Emplac. no filtro':'Pinos (formato anterior)';
@@ -143,6 +167,7 @@ function showInfo(d,key){CURKEY=key;info.style.display='block';
    <div class="row"><span class="k">Macrorregião:</span> <b style="color:${MRC[d.mr]}">${d.mr}</b></div>
    <div class="row"><span class="k">Vendedor:</span> <b>${d.vend}</b></div>
    <div class="row"><span class="k">${lbl}:</span> <b>${q}</b></div>
+   ${shareCidadeHtml(key)}
    ${detalheCidade(key)}`;}
 
 function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)return;
@@ -200,6 +225,7 @@ function aplicarFiltro(){
     }
     document.getElementById('fTot').innerHTML=`No filtro: <b>${tot}</b> emplac. · <b>${Object.keys(FCOUNTS).filter(k=>REG[k]).length}</b> cidades`;
   }
+  SHARE=computeShare();
   FMAX=1; for(const k in FCOUNTS){ if(REG[k]&&FCOUNTS[k]>FMAX)FMAX=FCOUNTS[k]; }
   for(const key in byName){
     const d=REG[key]; const q=FCOUNTS[key]||0;
@@ -218,6 +244,12 @@ function atualizarLegenda(){
   const el=document.getElementById('legend');
   const ativo=filtroAtivo();
   const unid=ativo?'emplac.':'pinos';
+  const gp=pct(SHARE.totG,SHARE.totAll);
+  let shareHead='';
+  if(gp!==null){
+    shareHead=`<div style="background:#C0000022;border-left:4px solid #C00000;border-radius:4px;padding:4px 7px;margin-bottom:6px;font-size:12px">
+      🛻 <b>Guerra</b>: <b>${gp}%</b> do mercado (filtro atual)<br><span class="k">${SHARE.totG} de ${SHARE.totAll} emplac.</span></div>`;
+  }
   let head='';
   if(total>0){
     const pct=Math.round(100*cntEmp[lider]/total);
@@ -225,7 +257,7 @@ function atualizarLegenda(){
     head=`<div style="background:${MRC[lider]}22;border-left:4px solid ${MRC[lider]};border-radius:4px;padding:4px 7px;margin-bottom:6px;font-size:12px">
       🏆 ${txt}<br><span class="k">${cntEmp[lider]} de ${total} ${unid} (${pct}%)</span></div>`;
   }
-  el.innerHTML=head+'<div style="font-weight:bold;margin-bottom:4px">Macrorregiões (clique p/ filtrar)</div>'+
+  el.innerHTML=shareHead+head+'<div style="font-weight:bold;margin-bottom:4px">Macrorregiões (clique p/ filtrar)</div>'+
    MRLIST.map(m=>`<div class="lg${shown[m]?'':' off'}" data-mr="${m}"><span class="sw" style="background:${MRC[m]}"></span>
       <span>${MRNAME[m]}${m===lider&&total>0?' 🏆':''}<br><span class="k">${cntCity[m]} cidades · <b>${cntEmp[m]}</b> ${unid}</span></span></div>`).join('');
   el.querySelectorAll('.lg').forEach(e=>e.onclick=()=>{const m=e.dataset.mr;shown[m]=!shown[m];
