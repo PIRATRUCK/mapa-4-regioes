@@ -81,7 +81,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r
 let REG={},layer,shown={R1:true,R2:true,R3:true,R4:true},byName={},keyByName={};
 let EMPLAC={fabs:[],fams:[],rows:[]};
 let CLIDET={meta:{},cidades:{}};
-let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null;
+let FCOUNTS={}, FMAX=1, HEAT=false, CURKEY=null, SELKEY=null;
 let SHARE={perCity:{},totG:0,totAll:0};
 function computeShare(){
   const fab=document.getElementById('fFab').value;
@@ -115,6 +115,7 @@ function style(f){const key=norm(f.properties.name);const d=REG[key];
     op = q>=10?0.92 : q>=5?0.5 : q>=1?0.28 : 0.06;
     if(q>=10){ wt=2.5; bc='#111'; }
   }
+  if(key===SELKEY){ op=Math.max(op,0.9); wt=3; bc='#111'; }
   return {fillColor:MRC[d.mr],fillOpacity:op,color:bc,weight:wt,opacity:on?1:0.3};}
 
 function detalheCidade(key){
@@ -172,9 +173,10 @@ function showInfo(d,key){CURKEY=key;info.style.display='block';
 
 function onEach(f,l){const key=norm(f.properties.name);const d=REG[key]; if(!d)return;
   byName[key]=l; keyByName[key]=key;
-  l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); showInfo(d,key);});
+  l.on('mouseover',()=>{l.setStyle({weight:3,fillOpacity:0.9}); l.bringToFront(); if(!SELKEY) showInfo(d,key);});
   l.on('mouseout',()=>{layer.resetStyle(l);});
-  l.on('click',()=>{showInfo(d,key); map.fitBounds(l.getBounds(),{maxZoom:11});});
+  l.on('click',()=>{SELKEY=(SELKEY===key)?null:key; layer.setStyle(style); if(SELKEY===key)l.bringToFront();
+    showInfo(d,key); map.fitBounds(l.getBounds(),{maxZoom:11});});
   l.bindTooltip(d.nome,{permanent:true,direction:'center',className:'citylabel',opacity:1});}
 
 Promise.all([
